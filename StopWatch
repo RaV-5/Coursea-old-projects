@@ -1,0 +1,88 @@
+# I wrote this code witohut reading description so some
+#   variables and functions might be different. 
+#     Did everything what is included in grading rubric.
+import simplegui
+
+count = 0
+message = "0:00.0"
+D = 0
+C = 0
+points = 0
+games = 0
+score = "0/0"
+
+def tick():
+    global count
+    count += 1
+    return zegar(count)
+
+def start():
+    timer.start()
+
+def stop():
+    global games, points, score
+    if timer.is_running():
+        timer.stop()
+        games = games + 1
+        if D == 0:
+            points = points + 1
+        else:
+            pass
+    else:
+        pass
+    
+    score = str(points) + "/" + str(games)
+    
+def restart():
+    
+    global points, games, score, count, message 
+    games = 0
+    points = 0
+    score = "0/0"
+    count = 0
+    message = "0:00.0"
+    timer.stop()
+    
+def zegar(time):
+    global D, C, message
+    D = time % 10
+    C = time // 10
+    
+    if C < 10:
+        B = 0
+
+    elif C >= 59:
+        x = C // 60
+        C = C - (x * 60)
+        B = ""
+        
+    else:
+        B = ""
+    
+    if C < 10:
+        B = 0
+    else:
+        pass
+        
+    A = (time //10) / 60
+    
+    message =  str(A) + ":" + str(B) + str(C) + "." + str(D)
+    
+
+    return message
+
+def tekst(canvas):
+    
+    
+    canvas.draw_text(message, (50, 50), 35, "White")
+    canvas.draw_text(score, (200, 150), 50, "Red")
+    
+    
+frame = simplegui.create_frame("Stopwatch game", 400, 250)
+frame.set_draw_handler(tekst)
+frame.add_button("Start", start, 100)
+frame.add_button("Stop", stop, 100)
+frame.add_button("Restart", restart, 100)
+timer = simplegui.create_timer(100, tick)
+
+frame.start()
