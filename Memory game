@@ -1,0 +1,76 @@
+# implementation of card game - Memory
+
+import simplegui
+import random
+
+card = []
+turns=0
+list=[]
+perm=[]
+# helper function to initialize globals
+def new_game():
+    global list, perm, card, turns
+    list=[]
+    for num in range(8):
+        list.append(num)
+        list.append(num)
+        
+    random.shuffle(list)
+
+    card=[]
+    turns=0
+    perm=[]
+
+
+# define event handlers
+def mouseclick(pos):
+    global card, turns, perm
+    #card = pos[0] // 50
+    if card == []:
+        card.append(pos[0]//50)
+    elif len(card) > 1:
+        if (pos[0]//50)==card[0] or (pos[0]//50)==card[1]:
+            pass
+        else:
+            card = []
+            card.append(pos[0]//50)
+            turns+=1
+    else:
+        if card[0] != (pos[0]//50):
+            card.append(pos[0]//50)
+            if list[card[0]]==list[card[1]]:
+                perm.append(card[0])
+                perm.append(card[1])     
+        else:
+            pass
+    if len(list)==len(perm):
+        new_game()
+        
+    label.set_text("Turns = "+ str(turns))
+
+# cards are logically 50x100 pixels in size    
+def draw(canvas):
+    for idx in (range(16)):
+            canvas.draw_polygon([(0, 0), (0, 100), (50 * (idx + 1), 100), (50 * (idx + 1), 0)], 1, 'Green')
+
+    for x in card:
+        canvas.draw_polygon([(x * 50, 0), (x * 50, 100), (50 * (x + 1), 100), (50 * (x + 1), 0)], 1, 'White', 'Green')    
+        canvas.draw_text(str(list[x]), (20+50*x, 50), 20, 'Red')
+
+ 
+    for r in perm:        
+            canvas.draw_polygon([(r * 50, 0), (r * 50, 100), (50 * (r + 1), 100), (50 * (r + 1), 0)], 1, 'Green', 'White')     
+            canvas.draw_text(str(list[r]), (20+50*r, 50), 20, 'Red')
+            
+# create frame and add a button and labels
+frame = simplegui.create_frame("Memory", 800, 100)
+frame.add_button("Reset", new_game)
+label = frame.add_label("Turns = 0")
+
+# register event handlers
+frame.set_mouseclick_handler(mouseclick)
+frame.set_draw_handler(draw)
+
+# get things rolling
+new_game()
+frame.start()
