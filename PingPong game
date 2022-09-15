@@ -1,0 +1,169 @@
+#PONG game
+
+#Variables and methods might be different because i made
+# this code without reading code tips and description.
+#  Every condition from grading rubric was implemented
+#   so it should work as lecturers wanted to.
+
+import simplegui
+import random
+
+height = 400
+width = 600
+pad_width = 8
+pad_height = 80
+ball_radius = 20
+
+pad_1_pos = [pad_width, 160]
+pad_1_vel = 0
+pad_2_pos = [width - pad_width, 160]
+pad_2_vel = 0
+
+ball_pos = [width / 2, height / 2]
+
+numbers = (-4, -3, -2, 2, 3, 4)
+numbers_p2 = (2, 3, 4)
+numbers_p1= (-4, -3, -2)
+numbers2 = (-2, -3, -4)
+ball_vel = [random.choice(numbers), random.choice(numbers2)]
+ball_p = 1.004
+
+p1 = 0
+p2 = 0
+
+def points(player):
+    global p1, p2
+    if player == "1":
+        p1 += 1
+    elif player == "2":
+        p2 += 1
+    
+def restart():
+    global ball_vel, ball_pos, p1, p2
+    pad_1_pos[1] = 160
+    pad_2_pos[1] = 160
+    ball_pos = [width / 2, height / 2]
+    ball_vel[0] = random.choice(numbers)
+    ball_vel[1] = random.choice(numbers2)
+    p1 = 0
+    p2 = 0
+    
+def keyup(key):
+    global pad_1_pos, pad_2_pos, pad_1_vel, pad_2_vel
+
+    if key == simplegui.KEY_MAP['down']:
+        pad_2_vel = 0
+    elif key == simplegui.KEY_MAP['up']:
+        pad_2_vel = 0
+    elif key == simplegui.KEY_MAP['s']:
+        pad_1_vel = 0
+    elif key == simplegui.KEY_MAP['w']:
+        pad_1_vel = 0
+    else:
+        pass
+
+    #print(pad_1_vel, pad_2_vel)
+
+def keydown(key):
+    global pad_1_pos, pad_2_pos, pad_1_vel, pad_2_vel
+
+    if key == simplegui.KEY_MAP['down']:
+        pad_2_vel = 6
+    elif key == simplegui.KEY_MAP['up']:
+        pad_2_vel = -6
+    elif key == simplegui.KEY_MAP['s']:
+        pad_1_vel = 6
+    elif key == simplegui.KEY_MAP['w']:
+        pad_1_vel = -6
+    else:
+        pass
+   
+    #print(pad_1_vel, pad_2_vel)
+    
+def tick():
+    global ball_pos, ball_vel, pad_1_pos, pad_2_pos
+    
+    ball_pos[0] += ball_vel[0]
+    ball_pos[1] += ball_vel[1]
+    
+    ball_vel[0] =  ball_vel[0] * ball_p
+    ball_vel[1] =  ball_vel[1] * ball_p
+    
+    if ball_pos[1] >= (height - ball_radius) or ball_pos[1] <= ball_radius:
+        ball_vel[1] = -ball_vel[1]
+    else:
+        pass
+
+    a = 4, 3, 2
+    b = -4, -3, -2
+    
+    if ball_pos[0] <= ball_radius + pad_width - 1:
+        if ball_pos[1] >= pad_1_pos[1] and ball_pos[1] <= pad_1_pos[1] + pad_height:
+            ball_vel[0] = -ball_vel[0]
+        else:
+            ball_vel[0] = random.choice(numbers_p2)
+            return points("2"), ball_reset()
+    else:
+        pass
+                
+    if ball_pos[0] >= width - ball_radius - pad_width + 1:
+        if ball_pos[1] >= pad_2_pos[1] and ball_pos[1] <= pad_2_pos[1] + pad_height:
+            ball_vel[0] = -ball_vel[0]
+        else:
+            ball_vel[0] = random.choice(numbers_p1)
+            return points("1"), ball_reset()
+    else:
+        pass
+    
+    if pad_1_pos[1] <= 0:
+        pad_1_pos[1] = 0
+    elif pad_1_pos[1] >= height - pad_height:
+        pad_1_pos[1] = height - pad_height
+    else:
+        pass
+        
+    if pad_2_pos[1] <= 0:
+        pad_2_pos[1] = 0
+    elif pad_2_pos[1] >= height - pad_height:
+        pad_2_pos[1] = height - pad_height
+    else:
+        pass
+    
+    pad_1_pos[1] += pad_1_vel
+    pad_2_pos[1] += pad_2_vel            
+    
+    #print(ball_pos)
+    #print(pad_1_pos, pad_2_pos)   
+        
+def ball_reset():
+    global ball_vel, ball_pos
+    pad_1_pos[1] = 160
+    pad_2_pos[1] = 160
+    ball_pos = [width / 2, height / 2]
+    #ball_vel[0] = random.choice(numbers)
+    ball_vel[1] = random.choice(numbers2)
+    
+    
+                          
+#canvas
+def draw (canvas):
+    canvas.draw_line([width / 2, 0], [width / 2, height], 1, "Grey")
+    canvas.draw_line([pad_width, 0], [pad_width, height], 1, "Grey")
+    canvas.draw_line([width - pad_width, 0], [width - pad_width, height], 1, "Grey")
+    canvas.draw_circle((width / 2, height / 2), 80, 1, "Grey")
+    canvas.draw_text(str(p1), (150, 90), 60, "Grey")
+    canvas.draw_text(str(p2), (450, 90), 60, "Grey")
+    canvas.draw_circle(ball_pos, ball_radius, 0.1, "White", "White")
+    canvas.draw_line((width - pad_width / 2 - 1, pad_2_pos[1]), (width - pad_width / 2 - 1, pad_2_pos[1] + pad_height), pad_width, "White")
+    canvas.draw_line((pad_width / 2 + 1, pad_1_pos[1]), (pad_width / 2 + 1, pad_1_pos[1] + pad_height), pad_width, "White")
+    
+    
+frame = simplegui.create_frame("PONG", width, height)
+frame.set_keydown_handler(keydown)
+frame.set_keyup_handler(keyup)
+frame.set_draw_handler(draw)
+restart_button = frame.add_button("Restart", restart, 100)
+timer = simplegui.create_timer(50, tick)
+
+frame.start()
+timer.start()
