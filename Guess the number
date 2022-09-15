@@ -1,0 +1,122 @@
+# Made this code without reading description so please keep in mind name of variables and function might be different.
+# Tried to explain everything
+
+import random
+import simplegui
+
+# Welcome messages
+print("This is 'Guess number' game")
+print(" ")
+print("Choose range of numbers and guess which one computer have in 'mind'.")
+print(" ")
+
+# global variables: x - random generated number, y - number of guesses, z - game mode -- > [0, 100) or [0, 1000)
+x = "Number to guess hasn't been generated yet. Please choose range first."
+y = 0
+z = 0
+
+
+# function which calculated how many guesses you have left
+def number_of_guesses():
+    global y
+    y = y - 1
+    print("You have: ", y, " more guesses.")
+    print(" ")
+
+
+# function which checking if you lost game
+def end_game():
+    if y > 1:
+        return number_of_guesses()
+    else:
+        print("Generated number was: ", x)
+        print(" ")
+        print("You lost! Your game has been restarted")
+        print(" ")
+        if z == 1:
+            return button_1()
+        else:
+            return button_2()
+
+
+# input function: prints number you entered,check for invalid input and calculate (your input)<, >, + (generated number)
+def input_guess(guess):
+
+    print("You entered: ", guess)
+
+    if x == "Number to guess hasn't been generated yet. Please choose range first.":
+            print(x)
+            print(" ")
+            
+    else:
+        if x > (float(guess)):
+            print("Generated number is higher!")
+        
+            return end_game()
+        elif x < (float(guess)):
+            print("Generated number is lower!")
+       
+            return end_game()
+        elif x == (float(guess)):
+            print("Correct!!!")
+            print(" ")
+            print("New game started.")
+            if z == 1:
+                return button_1()
+            else:
+                return button_2()
+
+        else:
+            print("Wrong input.")
+
+        # 3 below functions generates global values
+
+
+def number_generator1():
+    global x, y
+    x = random.randrange(0, 100)
+    y = 7
+    # if u want see generated number in console delete "#"
+    # print(x)
+
+
+def number_generator2():
+    global x, y
+    x = random.randrange(0, 1000)
+    y = 10
+    # if u want see generated number in console delete "#"
+    # print(x)
+
+
+def guess_counter():
+    global y
+    y = y - 1
+    print(y)
+
+
+# GUI buttons functions
+def button_1():
+    print("Range is [0, 100). Random number is generated.")
+    print("You have: 7 guesses.")
+    print(" ")
+    global z
+    z = 1
+    return number_generator1()
+
+
+def button_2():
+    print("Range is [0, 1000). Random number is generated.")
+    print("You have: 10 guesses.")
+    print(" ")
+    global z
+    z = 2
+    return number_generator2()
+
+
+# GUI
+frame = simplegui.create_frame("Guess the number", 200, 200)
+frame.add_button("Range: 0-100", button_1, 200)
+frame.add_button("Range: 0-1000", button_2, 200)
+frame.add_input("Enter the value", input_guess, 100)
+
+frame.start()
